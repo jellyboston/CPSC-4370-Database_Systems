@@ -48,12 +48,12 @@ def is_overlap(slot1: TimeSlotInfo, slot2: TimeSlotInfo) -> None | tuple[str, st
     """
     # TODO: implement this function
     start1, end1 = (
-                    slot1.start_hr * 60 + slot1.start_min,
-                    slot1.end_hr * 60 + end1.end_min
+                    slot1['start_hr'] * 60 + slot1['start_min'],
+                    slot1['end_hr'] * 60 + slot1['end_min']
     )
     start2, end2 = (
-                    slot2.start_hr * 60 + slot2.start_min,
-                    slot2.end_hr * 60 + slot2.end_min
+                    slot2['start_hr'] * 60 + slot2['start_min'],
+                    slot2['end_hr'] * 60 + slot2['end_min']
     )
     
     if end1 >= start2 and end2 >= start1:
@@ -83,6 +83,10 @@ def get_overlapping_sections() -> list[tuple[TimeSlotInfo, TimeSlotInfo, str, st
             SELECT s.course_id, s.sec_id, t.day, s.semester, s.year, t.start_hr, t.start_min, t.end_hr, t.end_min
             FROM section s JOIN time_slot t
             USING (time_slot_id)
+            ORDER BY
+            CASE t.day WHEN 'M' THEN 1 WHEN 'T' THEN 2 WHEN 'W' THEN 3
+            WHEN 'R' THEN 4 WHEN 'F' THEN 5 ELSE 6 END,
+            s.semester, s.year, t.start_hr, t.start_min;
         """
         )
         schedules = cursor.fetchall()
@@ -91,14 +95,23 @@ def get_overlapping_sections() -> list[tuple[TimeSlotInfo, TimeSlotInfo, str, st
         for row in schedules:
             course_id, sec_id, day, semester, year, start_hr, start_min, end_hr, end_min = row
             timeslots.append(TimeSlotInfo(
-                course_id, sec_id, day, semester, year, start_hr, start_min, end_hr, end_min
+                course_id=course_id,
+                sec_id=sec_id,
+                day=day,
+                semester=semester,
+                year=int(year),
+                start_hr=start_hr,
+                start_min=start_min,
+                end_hr=end_hr,
+                end_min=end_min,
             ))
 
-        # TODO 3: find overlapping sections
-        for i in range(len(schedules) - 2):
-            start, end = is_overlap(timeslots(i, i+1))
-            if start and end:
-                overlaps.append(timeslots[i], timeslots[i+1], start, end)
+        # TODO 3: find overlapping sections        
+        for a, b in zip(timeslots, timeslots[1:]):  
+            over = is_overlap(a, b)                 
+            if over is not None:
+                start, end = over
+                overlaps.append((a, b, start, end))
 
         # TODO 4: return the overlapping sections as a list of tuples. If A and B overlap, do not return both (A,B) and (B,A)
         return overlaps 
@@ -119,7 +132,11 @@ def print_overlapping_sections(overlaps: list[tuple[TimeSlotInfo, TimeSlotInfo, 
 
     # Note that A, B etc. reperesent an attribute or set of attributes that uniquely identifies a section.
     # Hint: look at the schema of the section table using the command "\d section" in a psql shell.
+    for ts1, ts2 in overlaps:
+        print(f"({ts1.course_id}, {ts1.sec_id}, {ts1.semester}, {ts1.year}) "
+            f"({ts2.course_id}, {ts2.sec_id}, {ts2.semester}, {ts2.year})")
+
 
 if __name__ == "__main__":
     overlapping_sections = get_overlapping_sections()
-    print_overlapping_sections(overlapping_sections())
+    print_overlapping_sections(overlapping_sections)
