@@ -62,11 +62,12 @@ def is_overlap(slot1: TimeSlotInfo, slot2: TimeSlotInfo) -> None | tuple[str, st
         overlap_end = min(end1, end2)
 
         # convert back to hours
-        start_hr, start_min = overlap_start // 60, overlap_start % 60
-        end_hr, end_min = overlap_end // 60, overlap_end % 60
+        start_hr, start_min = int(overlap_start // 60), int(overlap_start % 60)
+        end_hr, end_min = int(overlap_end // 60), int(overlap_end % 60)
+        # print(type(overlap_start), type(overlap_end), type(start_hr), type(start_min))
         return (
-            f"{overlap_start // 60:02d}:{overlap_start % 60:02d}",
-            f"{overlap_end // 60:02d}:{overlap_end % 60:02d}"
+            f"{start_hr:02d}:{start_min:02d}",
+            f"{end_hr:02d}:{end_min:02d}",
         )
     return None
 
@@ -100,18 +101,42 @@ def get_overlapping_sections() -> list[tuple[TimeSlotInfo, TimeSlotInfo, str, st
                 day=day,
                 semester=semester,
                 year=int(year),
-                start_hr=start_hr,
-                start_min=start_min,
-                end_hr=end_hr,
-                end_min=end_min,
+                start_hr=int(start_hr),
+                start_min=int(start_min),
+                end_hr=int(end_hr),
+                end_min=int(end_min),
             ))
 
-        # TODO 3: find overlapping sections        
-        for a, b in zip(timeslots, timeslots[1:]):  
-            over = is_overlap(a, b)                 
-            if over is not None:
-                start, end = over
-                overlaps.append((a, b, start, end))
+        # TODO 3: find overlapping sections            
+        i = 0
+        n = len(timeslots)
+        while i < n:
+            # compare only within the same (day, semester, year) bucket
+            day_i = timeslots[i]['day']
+            sem_i = timeslots[i]['semester']
+            year_i = timeslots[i]['year']
+            end_i = timeslots[i]['end_hr'] * 60 + timeslots[i]['end_min']
+
+            j = i + 1
+            while j < n:
+                # stop when we move to a new bucket (next day/term/year)
+                if (timeslots[j]['day'] != day_i or
+                    timeslots[j]['semester'] != sem_i or
+                    timeslots[j]['year'] != year_i):
+                    break
+
+                # since rows are ordered by start time, once next starts at/after current end, no more overlaps for i
+                start_j = timeslots[j]['start_hr'] * 60 + timeslots[j]['start_min']
+                if start_j >= end_i:
+                    break
+
+                over = is_overlap(timeslots[i], timeslots[j])
+                if over is not None:
+                    start, end = over
+                    overlaps.append((timeslots[i], timeslots[j], start, end))
+                j += 1
+
+            i += 1
 
         # TODO 4: return the overlapping sections as a list of tuples. If A and B overlap, do not return both (A,B) and (B,A)
         return overlaps 
@@ -132,9 +157,9 @@ def print_overlapping_sections(overlaps: list[tuple[TimeSlotInfo, TimeSlotInfo, 
 
     # Note that A, B etc. reperesent an attribute or set of attributes that uniquely identifies a section.
     # Hint: look at the schema of the section table using the command "\d section" in a psql shell.
-    for ts1, ts2 in overlaps:
-        print(f"({ts1.course_id}, {ts1.sec_id}, {ts1.semester}, {ts1.year}) "
-            f"({ts2.course_id}, {ts2.sec_id}, {ts2.semester}, {ts2.year})")
+    for ts1, ts2, start, end in overlaps:
+        print(f"({ts1['course_id']}, {ts1['sec_id']}, {ts1['semester']}, {ts1['year']}) "
+            f"({ts2['course_id']}, {ts2['sec_id']}, {ts2['semester']}, {ts2['year']})")
 
 
 if __name__ == "__main__":
