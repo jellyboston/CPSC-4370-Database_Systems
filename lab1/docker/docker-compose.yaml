@@ -1,0 +1,19 @@
+name: cpsc437
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    user: postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=default_database
+    volumes:
+      - cpsc547_pg_volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  cpsc547_pg_volume:
+    name: cpsc547_pg_volume
+    driver: local
