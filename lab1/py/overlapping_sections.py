@@ -157,9 +157,11 @@ def print_overlapping_sections(overlaps: list[tuple[TimeSlotInfo, TimeSlotInfo, 
 
     # Note that A, B etc. reperesent an attribute or set of attributes that uniquely identifies a section.
     # Hint: look at the schema of the section table using the command "\d section" in a psql shell.
+    # Expected Count: 17
     for ts1, ts2, start, end in overlaps:
-        print(f"({ts1['course_id']}, {ts1['sec_id']}, {ts1['semester']}, {ts1['year']}) "
-            f"({ts2['course_id']}, {ts2['sec_id']}, {ts2['semester']}, {ts2['year']})")
+        print(f"('course_id': {ts1['course_id']}, 'sec_id': {ts1['sec_id']}, 'semester': {ts1['semester']}, 'year': {ts1['year']}) "
+            f"('course_id': {ts2['course_id']}, 'sec_id': {ts2['sec_id']}, 'semester': {ts2['semester']}, 'year': {ts2['year']})"
+            f"\nOverlap Time: {start} - {end}\n")
 
 
 if __name__ == "__main__":
