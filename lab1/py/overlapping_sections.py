@@ -24,6 +24,8 @@ from database_connection import DatabaseConnection
 TimeSlotInfo = TypedDict(
     "TimeSlotInfo",
     {
+        "course_id": str,
+        "sec_id": str,
         "day": str,
         "semester": str,
         "year": int,
@@ -78,20 +80,28 @@ def get_overlapping_sections() -> list[tuple[TimeSlotInfo, TimeSlotInfo, str, st
         # TODO 1: write a SELECT sql query to get the section and time slot details for each section
         cursor.execute(
             """
-            SELECT t.day, s.semester, s.year, t.start_hr, t.start_min, t.end_hr, t.end_min
+            SELECT s.course_id, s.sec_id, t.day, s.semester, s.year, t.start_hr, t.start_min, t.end_hr, t.end_min
             FROM section s JOIN time_slot t
             USING (time_slot_id)
-            LIMIT 10;
         """
         )
         schedules = cursor.fetchall()
-    # TODO 2: map the schedules into a list of TimeSlotInfo objects
+        # TODO 2: map the schedules into a list of TimeSlotInfo objects
+        timeslots = []
+        for row in schedules:
+            course_id, sec_id, day, semester, year, start_hr, start_min, end_hr, end_min = row
+            timeslots.append(TimeSlotInfo(
+                course_id, sec_id, day, semester, year, start_hr, start_min, end_hr, end_min
+            ))
 
+        # TODO 3: find overlapping sections
+        for i in range(len(schedules) - 2):
+            start, end = is_overlap(timeslots(i, i+1))
+            if start and end:
+                overlaps.append(timeslots[i], timeslots[i+1], start, end)
 
-    # TODO 3: find overlapping sections
-
-    # TODO 4: return the overlapping sections as a list of tuples. If A and B overlap, do not return both (A,B) and (B,A)
-    return overlaps 
+        # TODO 4: return the overlapping sections as a list of tuples. If A and B overlap, do not return both (A,B) and (B,A)
+        return overlaps 
 
 
 def print_overlapping_sections(overlaps: list[tuple[TimeSlotInfo, TimeSlotInfo, str, str]]) -> None:
