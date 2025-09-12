@@ -71,12 +71,43 @@ def is_overlap(slot1: TimeSlotInfo, slot2: TimeSlotInfo) -> None | tuple[str, st
         )
     return None
 
+def process_overlaps(timeslots: TimeSlotInfo) -> list[tuple[str, str]]:
+        overlaps = []
+        i = 0
+        n = len(timeslots)
+        while i < n:
+            # compare only within the same (day, semester, year) bucket
+            day_i = timeslots[i]['day']
+            sem_i = timeslots[i]['semester']
+            year_i = timeslots[i]['year']
+            end_i = timeslots[i]['end_hr'] * 60 + timeslots[i]['end_min']
+
+            j = i + 1
+            while j < n:
+                # stop when we move to a new bucket (next day/term/year)
+                if (timeslots[j]['day'] != day_i or
+                    timeslots[j]['semester'] != sem_i or
+                    timeslots[j]['year'] != year_i):
+                    break
+
+                # since rows are ordered by start time, once next starts at/after current end, no more overlaps for i
+                start_j = timeslots[j]['start_hr'] * 60 + timeslots[j]['start_min']
+                if start_j >= end_i:
+                    break
+
+                over = is_overlap(timeslots[i], timeslots[j])
+                if over is not None:
+                    start, end = over
+                    overlaps.append((timeslots[i], timeslots[j], start, end))
+                j += 1
+
+            i += 1
+        return overlaps
+
 def get_overlapping_sections() -> list[tuple[TimeSlotInfo, TimeSlotInfo, str, str]]:
     """
     Implement this function to complete the task. It should return a list of tuples where each tuple contains:
     """
-    overlaps = []
-
     with DatabaseConnection() as cursor:
         # TODO 1: write a SELECT sql query to get the section and time slot details for each section
         cursor.execute(
@@ -107,36 +138,8 @@ def get_overlapping_sections() -> list[tuple[TimeSlotInfo, TimeSlotInfo, str, st
                 end_min=int(end_min),
             ))
 
-        # TODO 3: find overlapping sections            
-        i = 0
-        n = len(timeslots)
-        while i < n:
-            # compare only within the same (day, semester, year) bucket
-            day_i = timeslots[i]['day']
-            sem_i = timeslots[i]['semester']
-            year_i = timeslots[i]['year']
-            end_i = timeslots[i]['end_hr'] * 60 + timeslots[i]['end_min']
-
-            j = i + 1
-            while j < n:
-                # stop when we move to a new bucket (next day/term/year)
-                if (timeslots[j]['day'] != day_i or
-                    timeslots[j]['semester'] != sem_i or
-                    timeslots[j]['year'] != year_i):
-                    break
-
-                # since rows are ordered by start time, once next starts at/after current end, no more overlaps for i
-                start_j = timeslots[j]['start_hr'] * 60 + timeslots[j]['start_min']
-                if start_j >= end_i:
-                    break
-
-                over = is_overlap(timeslots[i], timeslots[j])
-                if over is not None:
-                    start, end = over
-                    overlaps.append((timeslots[i], timeslots[j], start, end))
-                j += 1
-
-            i += 1
+        # TODO 3: find overlapping sections
+        overlaps = process_overlaps(timeslots)           
 
         # TODO 4: return the overlapping sections as a list of tuples. If A and B overlap, do not return both (A,B) and (B,A)
         return overlaps 
@@ -158,10 +161,12 @@ def print_overlapping_sections(overlaps: list[tuple[TimeSlotInfo, TimeSlotInfo, 
     # Note that A, B etc. reperesent an attribute or set of attributes that uniquely identifies a section.
     # Hint: look at the schema of the section table using the command "\d section" in a psql shell.
     # Expected Count: 17
+    i = 1
     for ts1, ts2, start, end in overlaps:
         print(f"('course_id': {ts1['course_id']}, 'sec_id': {ts1['sec_id']}, 'semester': {ts1['semester']}, 'year': {ts1['year']}) "
             f"('course_id': {ts2['course_id']}, 'sec_id': {ts2['sec_id']}, 'semester': {ts2['semester']}, 'year': {ts2['year']})"
-            f"\nOverlap Time: {start} - {end}\n")
+            f"\n#{i}: Overlap Time: {start} - {end}\n")
+        i = i + 1
 
 
 if __name__ == "__main__":
