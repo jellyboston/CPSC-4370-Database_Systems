@@ -1,0 +1,51 @@
+('course_id': 949, 'sec_id': 1, 'semester': Fall, 'year': 2007) ('course_id': 893, 'sec_id': 1, 'semester': Fall, 'year': 2007)
+#1: Overlap Time: 09:00 - 09:50
+
+('course_id': 105, 'sec_id': 1, 'semester': Fall, 'year': 2009) ('course_id': 242, 'sec_id': 1, 'semester': Fall, 'year': 2009)
+#2: Overlap Time: 11:00 - 11:50
+
+('course_id': 735, 'sec_id': 1, 'semester': Spring, 'year': 2003) ('course_id': 599, 'sec_id': 1, 'semester': Spring, 'year': 2003)
+#3: Overlap Time: 13:00 - 13:50
+
+('course_id': 237, 'sec_id': 1, 'semester': Spring, 'year': 2008) ('course_id': 158, 'sec_id': 2, 'semester': Spring, 'year': 2008)
+#4: Overlap Time: 13:00 - 13:50
+
+('course_id': 679, 'sec_id': 1, 'semester': Spring, 'year': 2010) ('course_id': 735, 'sec_id': 2, 'semester': Spring, 'year': 2010)
+#5: Overlap Time: 13:00 - 13:50
+
+('course_id': 893, 'sec_id': 1, 'semester': Fall, 'year': 2007) ('course_id': 949, 'sec_id': 1, 'semester': Fall, 'year': 2007)
+#6: Overlap Time: 09:00 - 09:50
+
+('course_id': 304, 'sec_id': 1, 'semester': Fall, 'year': 2009) ('course_id': 242, 'sec_id': 1, 'semester': Fall, 'year': 2009)
+#7: Overlap Time: 11:00 - 11:50
+
+('course_id': 304, 'sec_id': 1, 'semester': Fall, 'year': 2009) ('course_id': 105, 'sec_id': 1, 'semester': Fall, 'year': 2009)
+#8: Overlap Time: 11:00 - 11:50
+
+('course_id': 242, 'sec_id': 1, 'semester': Fall, 'year': 2009) ('course_id': 105, 'sec_id': 1, 'semester': Fall, 'year': 2009)
+#9: Overlap Time: 11:00 - 11:50
+
+('course_id': 735, 'sec_id': 1, 'semester': Spring, 'year': 2003) ('course_id': 599, 'sec_id': 1, 'semester': Spring, 'year': 2003)
+#10: Overlap Time: 13:00 - 13:50
+
+('course_id': 237, 'sec_id': 1, 'semester': Spring, 'year': 2008) ('course_id': 158, 'sec_id': 2, 'semester': Spring, 'year': 2008)
+#11: Overlap Time: 13:00 - 13:50
+
+('course_id': 735, 'sec_id': 2, 'semester': Spring, 'year': 2010) ('course_id': 679, 'sec_id': 1, 'semester': Spring, 'year': 2010)
+#12: Overlap Time: 13:00 - 13:50
+
+('course_id': 893, 'sec_id': 1, 'semester': Fall, 'year': 2007) ('course_id': 949, 'sec_id': 1, 'semester': Fall, 'year': 2007)
+#13: Overlap Time: 09:00 - 09:50
+
+('course_id': 242, 'sec_id': 1, 'semester': Fall, 'year': 2009) ('course_id': 105, 'sec_id': 1, 'semester': Fall, 'year': 2009)
+#14: Overlap Time: 11:00 - 11:50
+
+('course_id': 599, 'sec_id': 1, 'semester': Spring, 'year': 2003) ('course_id': 735, 'sec_id': 1, 'semester': Spring, 'year': 2003)
+#15: Overlap Time: 13:00 - 13:50
+
+('course_id': 158, 'sec_id': 2, 'semester': Spring, 'year': 2008) ('course_id': 237, 'sec_id': 1, 'semester': Spring, 'year': 2008)
+#16: Overlap Time: 13:00 - 13:50
+
+('course_id': 679, 'sec_id': 1, 'semester': Spring, 'year': 2010) ('course_id': 735, 'sec_id': 2, 'semester': Spring, 'year': 2010)
+#17: Overlap Time: 13:00 - 13:50
+
