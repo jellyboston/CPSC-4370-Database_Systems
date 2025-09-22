@@ -48,14 +48,16 @@ def seed_database():
     seed_books(NUM_BOOKS, publisher_ids, author_ids)
 
     # Book edition data
-    book_ids = query_ids("book", "book_id")
+    book_ids = query_ids("book", "book_id") # foreign key
     seed_book_edition(book_ids)
 
     # Student registration data
     seed_student(NUM_STUDENTS, STUDENT_NAMES, STUDENT_STREETS, STUDENT_CITIES, STUDENT_STATES)
-    student_ids = query_ids("student", "student_id")
+    student_ids = query_ids("student", "student_id") # foreign key
     seed_student_phones(student_ids)
 
+    # Borrow transactions
+    seed_borrows(NUM_BORROWS, book_ids, student_ids)
 
 '''
 DRY function for seeding the publisher and author tables with single attributes.
@@ -144,6 +146,25 @@ def seed_student_phones(student_ids, min_phones=1, max_phones=3):
                 (sid, phone)
             )
 
+def seed_borrows(n, book_ids, student_ids, base = None, borrow_period = 14):
+    if base is None:
+        base = datetime.today().date()
+    
+    for i in range(n):
+        b_id = random.choice(book_ids)
+        s_id = random.choice(student_ids)
+        checkout = base - timedelta(days=random.randint(1, 365)) # represented in days
+        due_date = checkout + timedelta(days=borrow_period)
+        # seed a return date
+        if random.random() < 0.7:  # 70%返の数字
+            return_date = checkout + timedelta(random.randint(1, 14))
+        else:
+            return_date = None
+        database_actions.execute_insert(
+            "borrows",
+            ("book_id", "student_id", "check_out_date", "due_date", "return_date"),
+            (b_id, s_id, checkout, due_date, return_date)
+        )
 
 
 def reset_db_seed():
