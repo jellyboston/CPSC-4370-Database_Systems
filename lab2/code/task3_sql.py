@@ -66,15 +66,48 @@ def task_3_2():
 
 
 def task_3_3():
+    '''
+    combined join (
+        # From author
+        author_id SERIAL PRIMARY KEY,
+        name VARCHAR(200) NOT NULL
+
+        # From book
+        book_id SERIAL PRIMARY KEY,
+        title VARCHAR(200) NOT NULL,
+        publisher_id INTEGER,             
+        author_id INTEGER NOT NULL,     
+        FOREIGN KEY (author_id)    REFERENCES author(author_id),
+        FOREIGN KEY (publisher_id) REFERENCES publisher(publisher_id)
+
+        # From publisher
+        publisher_id SERIAL PRIMARY KEY,
+        publisher_name VARCHAR(100) NOT NULL
+    )
+    
+    '''
     """
     Identify publishers that frequently collaborate with specific authors,
     where "frequent collaboration" means publishers that have published more
     than three books by the same author.
     """
     # TODO: Implement me
-    
-    
-
+    sql = f"""
+    SELECT
+        p.publisher_name AS publisher,
+        a.name           AS author,
+        COUNT(DISTINCT b.book_id) AS collaboration_count
+    FROM publisher AS p
+        JOIN book      AS b ON p.publisher_id = b.publisher_id
+        JOIN author    AS a ON a.author_id    = b.author_id
+    GROUP BY
+        p.publisher_name,
+        a.name
+    HAVING
+        COUNT(DISTINCT b.book_id) > 3  
+    ORDER BY
+        collaboration_count DESC;
+    """
 
 if __name__ == '__main__':
     pass
