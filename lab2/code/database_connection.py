@@ -7,8 +7,8 @@ import psycopg2
 
 
 DB_NAME = 'library'       # newly created local database
-USER = 'test'             # replace with your username
-PASSWORD = 'password'     # replace with your password
+USER = 'admin'             # replace with your username
+PASSWORD = 'admin'     # replace with your password
 HOST = 'localhost'        # host postgres is running on
 PORT = '5432'             # port that postgres is listening on
 
