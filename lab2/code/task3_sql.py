@@ -14,8 +14,18 @@ def task_3_1():
     ranked from most borrowed to least borrowed.
     """
     # TODO: Implement me
-    pass
+    sql = f"""
+    SELECT book.title, COUNT(borrows.book_id) AS "Borrowed Count"
+    FROM book JOIN borrows USING (book_id)
+    GROUP BY book.book_id, book.title
+    ORDER BY "Borrowed Count" DESC 
+    LIMIT 5;
+    """
 
+    with DatabaseConnection() as cursor:
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        # print(results)
 
 def task_3_2():
     """
@@ -31,7 +41,28 @@ def task_3_2():
     by the month ascending.
     """
     # TODO: Implement me
-    pass
+    # Need to calculate duration = return_date - checkout_out_date
+    # Take average of that
+    sql = f"""
+    WITH borrow_data AS (
+        SELECT 
+            date_trunc('month', check_out_date) AS month_dt,
+            CASE WHEN return_date IS NOT NULL
+            THEN (return_date - check_out_date) END AS duration
+        FROM borrows
+    )
+    SELECT 
+        to_char(month_dt, 'YYYY-MM') AS month, 
+        COUNT(*) AS "total borrowed", 
+        ROUND(AVG(duration), 2) AS avg_duration
+    FROM borrow_data
+    GROUP BY month
+    ORDER BY month ASC;
+    """
+    with DatabaseConnection() as cursor:
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        # print(results)
 
 
 def task_3_3():
@@ -41,7 +72,8 @@ def task_3_3():
     than three books by the same author.
     """
     # TODO: Implement me
-    pass
+    
+    
 
 
 if __name__ == '__main__':
