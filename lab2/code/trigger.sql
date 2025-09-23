@@ -8,10 +8,18 @@ DECLARE
 BEGIN
     IF NEW.return_date > NEW.due_date THEN
         -- TODO IMPLEMENT FUNCTIONALITY HERE
-
+        days_overdue := NEW.return_date - NEW.due_date;
+        fine_due := days_overdue * fine_rate;
+        INSERT INTO fines (student_id, book_id, days_overdue, fine_amount)
+        VALUES (NEW.student_id, NEW.book_id, days_overdue, fine_due);
     END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- TODO: Add CREATE TRIGGER statement here
+CREATE TRIGGER calculate_fine
+AFTER UPDATE OF return_date ON borrows
+FOR EACH ROW 
+WHEN (NEW.return_date IS NOT NULL AND NEW.due_date IS NOT NULL AND NEW.return_date > NEW.due_date)
+EXECUTE FUNCTION calculate_fine();

@@ -57,7 +57,10 @@ def seed_database():
     seed_student_phones(student_ids)
 
     # Borrow transactions
-    seed_borrows(NUM_BORROWS, book_ids, student_ids)
+
+    seed_borrows(NUM_BORROWS, 
+                 query_ids("book", "book_id"), 
+                 query_ids("student", "student_id"))
 
 '''
 DRY function for seeding the publisher and author tables with single attributes.
@@ -141,7 +144,7 @@ def seed_student_phones(student_ids, min_phones=1, max_phones=3):
             numbers.add(phone)
 
             database_actions.execute_insert(
-                "student_phone",
+                "phone_number",
                 ("student_id", "phone_number"),
                 (sid, phone)
             )
@@ -153,10 +156,10 @@ def seed_borrows(n, book_ids, student_ids, base = None, borrow_period = 14):
     for i in range(n):
         b_id = random.choice(book_ids)
         s_id = random.choice(student_ids)
-        checkout = base - timedelta(days=random.randint(1, 365)) # represented in days
+        checkout = base - timedelta(days=random.randint(1, 2000)) # represented in days
         due_date = checkout + timedelta(days=borrow_period)
         # seed a return date
-        if random.random() < 0.7:  # 70%返の数字
+        if random.random() < 0.7:  
             return_date = checkout + timedelta(random.randint(1, 14))
         else:
             return_date = None
@@ -171,7 +174,7 @@ def reset_db_seed():
     sql = """
     TRUNCATE
         borrows,
-        student_phone,
+        phone_number,
         book_edition,
         book,
         student,

@@ -26,6 +26,7 @@ def task_3_1():
         cursor.execute(sql)
         results = cursor.fetchall()
         # print(results)
+    return results
 
 def task_3_2():
     """
@@ -44,25 +45,22 @@ def task_3_2():
     # Need to calculate duration = return_date - checkout_out_date
     # Take average of that
     sql = f"""
-    WITH borrow_data AS (
-        SELECT 
-            date_trunc('month', check_out_date) AS month_dt,
-            CASE WHEN return_date IS NOT NULL
-            THEN (return_date - check_out_date) END AS duration
-        FROM borrows
-    )
-    SELECT 
-        to_char(month_dt, 'YYYY-MM') AS month, 
-        COUNT(*) AS "total borrowed", 
-        ROUND(AVG(duration), 2) AS avg_duration
-    FROM borrow_data
-    GROUP BY month
-    ORDER BY month ASC;
+    SELECT
+        to_char(date_trunc('month', check_out_date), 'YYYY-MM') AS month,
+        COUNT(*) AS "total borrowed",
+        ROUND(
+          AVG((return_date - check_out_date)) FILTER (WHERE return_date IS NOT NULL)
+        , 2) AS avg_duration
+    FROM borrows
+    GROUP BY date_trunc('month', check_out_date)
+    HAVING COUNT(*) FILTER (WHERE return_date IS NOT NULL) > 0
+    ORDER BY date_trunc('month', check_out_date) ASC;
     """
     with DatabaseConnection() as cursor:
         cursor.execute(sql)
         results = cursor.fetchall()
         # print(results)
+    return results
 
 
 def task_3_3():
@@ -108,6 +106,11 @@ def task_3_3():
     ORDER BY
         collaboration_count DESC;
     """
+    with DatabaseConnection() as cursor:
+        cursor.execute(sql)
+        results = cursor.fetchall()
+    return results
+
 
 if __name__ == '__main__':
     pass

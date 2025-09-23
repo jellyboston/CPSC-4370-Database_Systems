@@ -11,12 +11,12 @@ CREATE TABLE author (
     name VARCHAR(200) NOT NULL
 ); 
 
-CREATE TABLE student (
-    student_id SERIAL PRIMARY KEY,
-    student_name VARCHAR(100),
-    street VARCHAR(100),
-    city VARCHAR(100),
-    state VARCHAR(100)
+CREATE TABLE student ( 
+    student_id SERIAL PRIMARY KEY NOT NULL,
+    student_name VARCHAR(100) NOT NULL,
+    street VARCHAR(200),
+    city VARCHAR(200),
+    state CHAR(2)
 ); 
 
 -- Parent Tables
@@ -32,27 +32,36 @@ CREATE TABLE book (
 CREATE TABLE book_edition (
     book_id INTEGER NOT NULL,
     edition_number INTEGER NOT NULL,
-    year INTEGER,
+    year INTEGER NOT NULL,
     PRIMARY KEY (book_id, edition_number),
-    FOREIGN KEY (book_id) REFERENCES book(book_id)
+    FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
 );
 
-CREATE TABLE student_phone (
+CREATE TABLE phone_number ( 
     student_id INTEGER NOT NULL,
-    phone_number VARCHAR(20) NOT NULL,
-
+    phone_number CHARACTER(100),
     PRIMARY KEY (student_id, phone_number),
-    FOREIGN KEY (student_id) REFERENCES student(student_id)
+    FOREIGN KEY (student_id) REFERENCES student(student_id) ON DELETE CASCADE
 );
 
-CREATE TABLE borrows (
-    book_id INTEGER NOT NULL,
-    student_id INTEGER NOT NULL,
+CREATE TABLE borrows ( 
+    book_id INTEGER,
+    student_id INTEGER,
     check_out_date DATE NOT NULL,
-    due_date DATE,
+    due_date DATE NOT NULL,
     return_date DATE,
 
     PRIMARY KEY (book_id, student_id, check_out_date),
-    FOREIGN KEY (book_id) REFERENCES book(book_id),
-    FOREIGN KEY (student_id) REFERENCES student(student_id)
+    FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES student(student_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS fines (
+    fine_id SERIAL PRIMARY KEY,
+    student_id INT NOT NULL,
+    book_id INT NOT NULL,
+    days_overdue INT NOT NULL,
+    fine_amount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES student(student_id),
+    FOREIGN KEY (book_id) REFERENCES book(book_id)
 );
