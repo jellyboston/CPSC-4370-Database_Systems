@@ -57,7 +57,6 @@ def seed_database():
     seed_student_phones(student_ids)
 
     # Borrow transactions
-
     seed_borrows(NUM_BORROWS, 
                  query_ids("book", "book_id"), 
                  query_ids("student", "student_id"))
