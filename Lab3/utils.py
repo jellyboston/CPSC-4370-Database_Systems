@@ -1,5 +1,6 @@
 from typing import Set
 from functional_dependency_set import FunctionalDependencySet
+from functional_dependency_set import FunctionalDependency
 
 
 def apply_decomposition(F: FunctionalDependencySet) -> FunctionalDependencySet:
@@ -17,7 +18,12 @@ def apply_decomposition(F: FunctionalDependencySet) -> FunctionalDependencySet:
             applied
     """
     # TODO: implement the decomposition property (~ 4 lines)
-    pass
+    decomposed = FunctionalDependencySet()
+    for fd in F:
+        lhs, rhs = fd
+        for attr in rhs:
+            decomposed.add(FunctionalDependency(set(lhs), {attr}))
+    return decomposed
 
 
 def remove_extraneous_attributes(F: FunctionalDependencySet) -> FunctionalDependencySet:
