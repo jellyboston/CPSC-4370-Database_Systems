@@ -60,4 +60,25 @@ def compute_closure(F: FunctionalDependencySet, alpha: Set[str]) -> Set[str]:
     return: the closure of alpha under F
     """
     # TODO: implement the closure computation (~ 10 lines)
-    pass
+    '''
+    Ex for tracing: F1={A→C,A→F,A→G,E→D,AC→D,AD→B,AD→C,CE→B,CF→E,CF→G}
+    Find: A+ under F1
+    1. Set results = {A}
+    2. for every fd, check if lhs is in results
+    3. if so, merge rhs to results
+    '''
+    results = set(alpha)
+    changed = True
+    while changed:
+        # sets are unordered so no index
+        changed = False
+        for fd in F:
+            lhs, rhs = fd
+            if lhs.issubset(results):
+                # track changes
+                before = len(results)
+                results |= rhs
+                changed = changed or (len(results) > before)
+    return results
+            
+
