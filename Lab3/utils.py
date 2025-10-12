@@ -72,8 +72,21 @@ def apply_union(F: FunctionalDependencySet) -> FunctionalDependencySet:
     return: a set of functional dependencies with the union property applied
     """
     # TODO: implement the union property (~ 10 lines)
-    pass
+    union = FunctionalDependencySet()
+    fd_map = {}
 
+    # all equivalent LHS should land in the same bucket
+    for fd in F:
+        lhs, rhs = fd
+        # lhs is a set and unhashable -> sort to canonicalize and tuplify to make hashable
+        key = tuple(sorted(lhs))
+        fd_map[key] = fd_map.get(key, set()) | set(rhs)
+
+    # process back to fd sets
+    for key, union_rhs in fd_map.items():
+        # key is a tuple so recast
+        union.add(FunctionalDependency(set(key), set(union_rhs)))
+    return union
 
 def compute_closure(F: FunctionalDependencySet, alpha: Set[str]) -> Set[str]:
     """
