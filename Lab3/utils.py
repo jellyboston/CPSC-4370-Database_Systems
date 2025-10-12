@@ -31,12 +31,31 @@ def remove_extraneous_attributes(F: FunctionalDependencySet) -> FunctionalDepend
     Remove extraneous attributes on the left hand side from each functional
     dependency in F
 
+    Definition: an attribute is extraneous iff beta is a subset of (alpha - A)^+
+
     param F: a set of functional dependencies
     return: a set of functional dependencies with extraneous attributes
              removed from the left hand side
     """
     # TODO: implement this function (~ 10 lines)
-    pass
+    output = FunctionalDependencySet()
+    for fd in F:
+        lhs, rhs = fd # a -> b
+        curr_lhs = set(lhs) 
+        # test on FDs whose LHS has more than one attribute
+        if len(curr_lhs) > 1:
+            changed = True
+            while changed:
+                changed = False
+                # iterate over a snapshot since we might mutate current_lhs
+                for attr in list(curr_lhs):
+                    # only add if not extraneous
+                    if rhs.issubset(compute_closure(F, curr_lhs - {attr})):
+                        curr_lhs.remove(attr)
+                        changed = True
+                        break
+        output.add(FunctionalDependency(curr_lhs, set(rhs)))
+    return output        
 
 
 def apply_union(F: FunctionalDependencySet) -> FunctionalDependencySet:
