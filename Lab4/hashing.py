@@ -155,7 +155,10 @@ class BucketAddressTable:
             b -> 00010
         """
         # TODO: implement the hash function (~1 to 4 lines)
-        pass
+        first_letter_to_int = ord(key[0].lower) - ord('a') + 1 # e.g. "Apple" -> 1
+        binary_eq = format(first_letter_to_int, f'0{self.max_bits}b')
+        return binary_eq[-self.i:] # return as a binary string of last i bits
+        
 
     def _insert_helper(self, key: str, bucket: Bucket):
         """
@@ -163,7 +166,6 @@ class BucketAddressTable:
         when inserting a key into a bucket.
         """
         # TODO: implement the helper function (~ 30 lines to implement total)
-
         # validation to prevent common bug -- DO NOT DELETE
         if self.i < bucket.ij:
             raise ValueError("Cannot insert into a bucket with greater depth")
@@ -176,12 +178,51 @@ class BucketAddressTable:
             else:
                 # TODO: implement the case when the bucket is full and the
                 # address table needs to be doubled (~ 7 lines)
-                pass
+                self.i += 1
+                old_table = self.address_table
+                new_table = {}
+                # double buckets and assign expanded bitstring key
+                for k, bucket in old_table.items():
+                    # root keys keep the same values
+                    new_table["0" + k] = bucket
+                    new_table["1" + k] = bucket
+                self.address_table = new_table
+                # recompute new table entry for key and insert
+                new_value = self.hash_function(key)
+                self._insert_helper(key, self.address_table[new_value])
 
         # if the address table is using more bit depth then the current bucket
         if self.i > bucket.ij:
             # TODO: finish the i > ij case (~ 20 lines)
-            pass
+            # alloc new bucket z and set ij += 1 and iz += 1
+            old_d = bucket.ij
+            bucket.ij += 1
+            z = Bucket(ij=bucket.ij)
+            
+            # change pointers in addr table to correct buckets
+            for addr, b in self.address_table.items():
+                # only reassign what's pointed to this bucket
+                if b is bucket:
+                    # new depth to compare at
+                    new_suffix = addr[-bucket.ij:] # e.g. addr[-5] -> "..10101"
+                    # split on highest bit
+                    if new_suffix[0] == 1:
+                        self.address_table[addr] = z 
+                    else:
+                        self.address_table[addr] = bucket
+
+            # remove each record in bucket j and reinsert
+            old_records = bucket.records[:]
+            bucket.records.clear()
+            bucket.overflow = None # reset overflow chain on split
+            for r in old_records:
+                self.insert(r)
+
+            # recompute the bucket for k and insert record
+            # recomp. since bucket referencing addr are different now 
+            bval = self.hash_function(key) 
+            self.insert(bval)
+
 
     def insert(self, key):
         """
