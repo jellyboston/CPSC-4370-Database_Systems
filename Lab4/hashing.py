@@ -155,7 +155,7 @@ class BucketAddressTable:
             b -> 00010
         """
         # TODO: implement the hash function (~1 to 4 lines)
-        first_letter_to_int = ord(key[0].lower) - ord('a') + 1 # e.g. "Apple" -> 1
+        first_letter_to_int = ord(key[0].lower()) - ord('a') + 1 # e.g. "Apple" -> 1
         binary_eq = format(first_letter_to_int, f'0{self.max_bits}b')
         return binary_eq[-self.i:] # return as a binary string of last i bits
         
@@ -182,10 +182,10 @@ class BucketAddressTable:
                 old_table = self.address_table
                 new_table = {}
                 # double buckets and assign expanded bitstring key
-                for k, bucket in old_table.items():
+                for k, b in old_table.items():
                     # root keys keep the same values
-                    new_table["0" + k] = bucket
-                    new_table["1" + k] = bucket
+                    new_table["0" + k] = b
+                    new_table["1" + k] = b
                 self.address_table = new_table
                 # recompute new table entry for key and insert
                 new_value = self.hash_function(key)
@@ -206,7 +206,7 @@ class BucketAddressTable:
                     # new depth to compare at
                     new_suffix = addr[-bucket.ij:] # e.g. addr[-5] -> "..10101"
                     # split on highest bit
-                    if new_suffix[0] == 1:
+                    if new_suffix[0] == '1':
                         self.address_table[addr] = z 
                     else:
                         self.address_table[addr] = bucket
@@ -220,8 +220,7 @@ class BucketAddressTable:
 
             # recompute the bucket for k and insert record
             # recomp. since bucket referencing addr are different now 
-            bval = self.hash_function(key) 
-            self.insert(bval)
+            self.insert(key)
 
 
     def insert(self, key):
