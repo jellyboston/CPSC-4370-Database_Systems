@@ -85,7 +85,7 @@ def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
     nodes = pg.nodes
 
     # Initialize in-degrees for each node
-    in_degrees = {node: 0 for node in nodes}
+    in_degrees = {node: 0 for node in nodes} # python note: dict with (t_id, 0)
     for node in nodes.values():
         for edge in node.edges:
             in_degrees[edge.id] += 1
@@ -111,23 +111,39 @@ def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
         """
         # TODO 1: Check if all nodes are visited; if so, record the current
         # order by adding a COPY of the stack to all_orders and return
+        all_visited = True
+        for _, node in node.items():
+            if node not in visited:
+                all_visited = False
+                break
+        if all_visited:
+            all_orders.add(stack.copy())
+            return
 
         # Iterate over all nodes
         for tx, node in nodes.items():
             # TODO 2: Proceed only if node is unvisited and has no
             # incoming edges from unvisited nodes
-            if True:  # Replace True with the correct condition
+
+            if node not in visited and in_degrees[tx] == 0:  # Replace True with the correct condition
                 # TODO 3: Visit the node and add it to the topological sort
                 # stack (2 lines)
+                visited.add(node)
+                stack.add(node)
 
                 # TODO 4: Decrement in-degrees of successors
                 # (2 lines)
+                for dst in node.edges:
+                    in_degrees[dst.id] -= 1
 
                 # TODO 5: Recurse (1 line)
+                _all_topological_sorts_util(visited, stack, all_orders)
 
                 # TODO 6: Backtrack: un-visit the node and restore in-degrees
                 # of successors (4 lines)
-                pass
+                visited.remove(node)
+                for dst in node.edges:
+                    in_degrees[dst.id] += 1
 
     _all_topological_sorts_util(visited, stack, all_orders)
 
