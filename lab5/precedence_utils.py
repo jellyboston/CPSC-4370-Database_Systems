@@ -124,7 +124,7 @@ def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
                 # TODO 3: Visit the node and add it to the topological sort
                 # stack (2 lines)
                 visited.add(tx)
-                stack.add(tx)
+                stack.append(tx)
 
                 # TODO 4: Decrement in-degrees of successors
                 # (2 lines)
@@ -136,7 +136,7 @@ def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
 
                 # TODO 6: Backtrack: un-visit the node and restore in-degrees
                 # of successors (4 lines)
-                visited.remove(node)
+                visited.remove(tx)
                 stack.pop()
                 for dst in node.edges:
                     in_degrees[dst.id] += 1
