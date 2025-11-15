@@ -30,22 +30,25 @@ def has_cycles(graph: PrecedenceGraph) -> bool:
         """
         # TODO 1: check if the node is in the recursion stack or
         # has already been visited and return accordingly (4 lines)
-        # we found a cycle 
-        check_node = graph.nodes[transaction_id]
-        if check_node in rec_stack or check_node in visited: return True
+
+        # found a back edge -> cycle
+        if transaction_id in rec_stack: return True
+        # fully explored -> no cycle found
+        elif transaction_id in visited: return False
 
         # TODO 2: Mark the node as visited and add it to the recursion stack
         # Mark the node as visited and add it to the recursion stack (2 lines)
-        visited.add(check_node)
-        rec_stack(check_node)
+        visited.add(transaction_id)
+        rec_stack.add(transaction_id)
 
         # TODO 3: Recursively check all neighbours for cycles (~3 lines)
+        check_node = graph.nodes[transaction_id]
         for dst in check_node.edges:
             neighbor_id = dst.id
             if _has_cycles_util(neighbor_id): return True
 
         # TODO 4: Remove the node from the recursion stack (1 line)
-        rec_stack.remove(check_node)
+        rec_stack.remove(transaction_id)
 
         # TODO 5: Return no cycle found
         return False
