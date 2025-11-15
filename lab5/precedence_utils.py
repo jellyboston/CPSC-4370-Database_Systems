@@ -70,7 +70,7 @@ def is_conflict_serializable(precedence_graph: PrecedenceGraph) -> bool:
         True if the schedule is conflict serializable, False otherwise.
     """
     # TODO: 1 line of code
-    return has_cycles(precedence_graph)
+    return not has_cycles(precedence_graph)
 
 
 def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
@@ -111,25 +111,20 @@ def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
         """
         # TODO 1: Check if all nodes are visited; if so, record the current
         # order by adding a COPY of the stack to all_orders and return
-        all_visited = True
-        for _, node in node.items():
-            if node not in visited:
-                all_visited = False
-                break
-        if all_visited:
-            all_orders.add(stack.copy())
+        if len(stack) == len(nodes):
+            all_orders.append(stack.copy())
             return
-
+        
         # Iterate over all nodes
         for tx, node in nodes.items():
             # TODO 2: Proceed only if node is unvisited and has no
             # incoming edges from unvisited nodes
 
-            if node not in visited and in_degrees[tx] == 0:  # Replace True with the correct condition
+            if tx not in visited and in_degrees[tx] == 0:  # Replace True with the correct condition
                 # TODO 3: Visit the node and add it to the topological sort
                 # stack (2 lines)
-                visited.add(node)
-                stack.add(node)
+                visited.add(tx)
+                stack.add(tx)
 
                 # TODO 4: Decrement in-degrees of successors
                 # (2 lines)
@@ -142,6 +137,7 @@ def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
                 # TODO 6: Backtrack: un-visit the node and restore in-degrees
                 # of successors (4 lines)
                 visited.remove(node)
+                stack.pop()
                 for dst in node.edges:
                     in_degrees[dst.id] += 1
 
