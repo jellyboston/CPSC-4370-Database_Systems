@@ -70,7 +70,7 @@ def is_conflict_serializable(precedence_graph: PrecedenceGraph) -> bool:
         True if the schedule is conflict serializable, False otherwise.
     """
     # TODO: 1 line of code
-    return False  # Change this line
+    return has_cycles(precedence_graph)
 
 
 def find_all_topological_sorts(pg: PrecedenceGraph) -> List[List[str]]:
